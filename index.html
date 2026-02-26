@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E Suraj · AI & Data Science Portfolio</title>
+    <!-- Poppins Font & Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* ===== THEME VARIABLES (Normal Mode - Teal Accent) ===== */
+      body {
+        --bg-gradient: linear-gradient(135deg, #0b1120, #1a2635, #0b1120);
+        --text-color: #e2e8f0;
+        --primary: #14b8a6;
+        --primary-dark: #0d9488;
+        --card-bg: rgba(17, 25, 40, 0.7);
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        --glow: 0 0 20px rgba(20, 184, 166, 0.5);
+        --particle-color: #14b8a6;
+        transition: background-color 0.3s, color 0.3s;
+        background: var(--bg-gradient);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        color: var(--text-color);
+        min-height: 100vh;
+        position: relative;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 100%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+
+      /* Hacker Mode Overrides */
+      body.hacker-mode {
+        --bg-gradient: linear-gradient(135deg, #0a0f1a, #111a24, #0a0f1a);
+        --text-color: #ccf0e8;
+        --primary: #2dd4bf;
+        --primary-dark: #14b8a6;
+        --card-bg: rgba(0, 0, 0, 0.85);
+        --border: #2dd4bf30;
+        --glow: 0 0 20px #2dd4bf;
+        --particle-color: #2dd4bf;
+      }
+
+      /* Particles canvas */
+      #particle-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.3;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      /* ===== NAVIGATION ===== */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(11, 17, 32, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+      }
+
+      .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-shadow: var(--glow);
+      }
+
+      .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.2s;
+        color: var(--text-color);
+        background: transparent;
+      }
+
+      .tab:hover {
+        background: var(--primary);
+        color: #0b1120;
+        box-shadow: var(--glow);
+      }
+
+      .tab.active {
+        background: var(--primary);
+        color: #0b1120;
+        font-weight: 600;
+      }
+
+      .mode-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        padding: 0.2rem;
+        display: flex;
+        gap: 0.2rem;
+      }
+
+      .mode-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        padding: 0.4rem 1rem;
+        border-radius: 30px;
+        cursor: pointer;
+        color: var(--text-color);
+        transition: 0.2s;
+      }
+
+      /* Normal mode active - blue */
+      #normalMode.active {
+        background: #2563eb;
+        color: white;
+      }
+
+      /* Hacker mode active - green */
+      #hackerMode.active {
+        background: #10b981;
+        color: white;
+      }
+
+      /* ===== SECTIONS ===== */
+      section {
+        padding: 6rem 0;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      h2 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+        box-shadow: var(--glow);
+      }
+
+      /* ===== HOME ===== */
+      .home-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 3rem;
+        flex-wrap: wrap;
+      }
+
+      .hero-text h1 {
+        font-size: 3.5rem;
+        line-height: 1.2;
+      }
+
+      .highlight {
+        color: var(--primary);
+      }
+
+      .job-title {
+        font-size: 1.6rem;
+        margin: 1rem 0;
+        min-height: 3rem;
+      }
+
+      .job-title span {
+        border-right: 3px solid var(--primary);
+        padding-right: 8px;
+        animation: blink 0.8s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          border-color: transparent;
+        }
+      }
+
+      /* Professional image on the right */
+      .professional-image {
+        width: 220px; /* smaller size */
+        height: 220px; /* square container */
+        border-radius: 50%; /* perfect circle */
+        overflow: hidden;
+        border: 2px solid var(--border);
+        box-shadow: var(--shadow);
+        margin: auto; /* center it */
+      }
+
+      .professional-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* prevents stretching */
+        display: block;
+      }
+
+      /* Dashboard stats */
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+      }
+
+      .stat-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: 0.2s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glow);
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+        color: var(--primary);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+      }
+
+      /* ===== ABOUT ===== */
+      .about-text {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        line-height: 1.8;
+      }
+
+      /* ===== EDUCATION (Timeline) ===== */
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: var(--primary);
+        box-shadow: var(--glow);
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-bottom: 2rem;
+        padding-left: 1.5rem;
+      }
+
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -0.45rem;
+        top: 0.3rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: var(--primary);
+        box-shadow: var(--glow);
+      }
+
+      .timeline-content {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 1.2rem;
+      }
+
+      /* ===== SKILLS ===== */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .skill-category {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: 0.2s;
+      }
+
+      .skill-category:hover {
+        box-shadow: var(--glow);
+      }
+
+      .skill-category h3 {
+        margin-bottom: 1rem;
+        color: var(--primary);
+      }
+
+      .skill-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+
+      .skill-tag {
+        background: var(--primary);
+        color: #0b1120;
+        padding: 0.3rem 1rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      /* ===== PROJECTS ===== */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .project-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s;
+      }
+
+      .project-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--glow);
+      }
+
+      .project-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .project-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .tech-badge {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.2rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.8rem;
+      }
+
+      /* ===== ACHIEVEMENTS ===== */
+      .achievements-timeline .timeline-content {
+        font-weight: 500;
+      }
+
+      /* ===== CONTACT ===== */
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .contact-info,
+      .contact-form {
+        background: var(--card-bg);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .info-item i {
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+
+      .info-item a {
+        color: var(--text-color);
+        text-decoration: none;
+        transition: 0.2s;
+      }
+
+      .info-item a:hover {
+        color: var(--primary);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .social-links a {
+        color: var(--text-color);
+        font-size: 2rem;
+        transition: 0.2s;
+      }
+
+      .social-links a:hover {
+        color: var(--primary);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text-color);
+      }
+
+      button {
+        background: var(--primary);
+        color: #0b1120;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s;
+      }
+
+      button:hover {
+        background: var(--primary-dark);
+        box-shadow: var(--glow);
+      }
+
+      /* ===== AI ASSISTANT ===== */
+      .assistant-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary);
+        color: #0b1120;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        cursor: pointer;
+        box-shadow: var(--glow);
+        z-index: 99;
+        transition: 0.2s;
+      }
+
+      .assistant-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .chat-panel {
+        position: fixed;
+        bottom: 6rem;
+        right: 2rem;
+        width: 300px;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        display: none;
+        flex-direction: column;
+        z-index: 100;
+      }
+
+      .chat-panel.open {
+        display: flex;
+      }
+
+      .chat-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+      }
+
+      .chat-messages {
+        height: 200px;
+        overflow-y: auto;
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .chat-input-area {
+        display: flex;
+        border-top: 1px solid var(--border);
+      }
+
+      .chat-input {
+        flex: 1;
+        border: none;
+        padding: 0.8rem;
+        background: transparent;
+        color: var(--text-color);
+      }
+
+      .chat-send {
+        background: transparent;
+        color: var(--primary);
+        border: none;
+        padding: 0 1rem;
+      }
+      .chat-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .nav-container {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .home-content {
+          flex-direction: column;
+          text-align: center;
+        }
+        .hero-text h1 {
+          font-size: 2.5rem;
+        }
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <div class="logo">E Suraj</div>
+        <div class="nav-tabs" id="navTabs"></div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="normalMode">
+            <i class="fas fa-sun"></i>
+          </button>
+          <button class="mode-btn" id="hackerMode">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container">
+      <!-- Home -->
+      <section id="home">
+        <div class="home-content">
+          <div class="hero-text">
+            <h1>E Suraj</h1>
+            <div class="job-title"><span id="rotating-title"></span></div>
+            <p>Engineering Undergraduate | AI & Data Science Enthusiast</p>
+            <!-- No circular profile image here - it's removed -->
+          </div>
+          <!-- Professional image on the right - replace src with your actual image.jpeg -->
+          <div class="professional-image">
+            <img src="./image.jpeg" alt="E Suraj" />
+          </div>
+        </div>
+        <!-- Live Dashboard -->
+        <div class="dashboard">
+          <div class="stat-card">
+            <i class="fas fa-code stat-icon"></i>
+            <div class="stat-number">5+</div>
+            <div>Projects</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-trophy stat-icon"></i>
+            <div class="stat-number">4</div>
+            <div>Achievements</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-clock stat-icon"></i>
+            <div class="stat-number">2+</div>
+            <div>Years</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-users stat-icon"></i>
+            <div class="stat-number">3</div>
+            <div>Hackathons</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about">
+        <h2>About</h2>
+        <div class="about-text" id="about-description"></div>
+      </section>
+
+      <!-- Education -->
+      <section id="education">
+        <h2>Education</h2>
+        <div class="timeline" id="education-timeline"></div>
+      </section>
+
+      <!-- Skills -->
+      <section id="skills">
+        <h2>Skills</h2>
+        <div class="skills-grid" id="skills-container"></div>
+      </section>
+
+      <!-- Projects -->
+      <section id="projects">
+        <h2>Projects</h2>
+        <div class="projects-grid" id="projects-container"></div>
+      </section>
+
+      <!-- Achievements -->
+      <section id="achievements">
+        <h2>Achievements</h2>
+        <div
+          class="timeline achievements-timeline"
+          id="achievements-timeline"
+        ></div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact">
+        <h2>Contact</h2>
+        <div class="contact-grid">
+          <div class="contact-info" id="contact-info"></div>
+          <div class="contact-form">
+            <h3 style="margin-bottom: 1rem; color: var(--primary)">
+              Let's Connect
+            </h3>
+            <form id="contactForm">
+              <div class="form-group">
+                <input type="text" placeholder="Full Name" required />
+              </div>
+              <div class="form-group">
+                <input type="email" placeholder="Email" required />
+              </div>
+              <div class="form-group">
+                <textarea rows="4" placeholder="Message" required></textarea>
+              </div>
+              <button type="submit">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer with Social Links -->
+    <footer
+      style="
+        text-align: center;
+        padding: 2rem;
+        border-top: 1px solid var(--border);
+      "
+    >
+      <div class="social-links" style="justify-content: center">
+        <a href="#" target="_blank" id="github-link"
+          ><i class="fab fa-github"></i
+        ></a>
+        <a href="#" target="_blank" id="linkedin-link"
+          ><i class="fab fa-linkedin"></i
+        ></a>
+      </div>
+      <p style="margin-top: 1rem">© 2025 E Suraj · AI Laboratory Theme</p>
+    </footer>
+
+    <!-- AI Assistant -->
+    <div class="assistant-btn" id="assistantBtn">
+      <i class="fas fa-robot"></i>
+    </div>
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-header">AI Assistant</div>
+      <div class="chat-messages" id="chatMessages">
+        <div>
+          🤖 Hello! I'm Suraj's AI assistant. Ask me about skills, projects, or
+          achievements.
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input
+          type="text"
+          class="chat-input"
+          id="chatInput"
+          placeholder="Type a message..."
+        />
+        <button class="chat-send" id="chatSend">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // ===== PORTFOLIO DATA (from your JSON) =====
+      const portfolio = {
+        meta: { name: "E Suraj", title: "AI & Data Science Portfolio" },
+        theme: {
+          background: {
+            type: "animated-gradient",
+            colors: ["#0f172a", "#1e293b", "#0f172a"],
+            animation: { enabled: true, duration: 15, direction: "diagonal" },
+          },
+          particles: {
+            enabled: true,
+            count: 40,
+            color: "#14b8a6",
+            opacity: 0.2,
+            connectionDistance: 100,
+          },
+        },
+        navigation: {
+          brandName: "E Suraj",
+          tabs: [
+            "Home",
+            "About",
+            "Education",
+            "Skills",
+            "Projects",
+            "Achievements",
+            "Contact",
+          ],
+        },
+        sections: {
+          home: {
+            heading: "E Suraj",
+            subHeading:
+              "Engineering Undergraduate | AI & Data Science Enthusiast",
+            profileImage: {
+              enabled: true,
+              src: "images/profile.jpg",
+              style: "rounded-shadow",
+            },
+            jobTitleAnimation: {
+              titles: [
+                "AI Engineer",
+                "Machine Learning Developer",
+                "Data Science Enthusiast",
+              ],
+              speed: 3000,
+            },
+          },
+          about: {
+            description:
+              "I am a passionate Computer Science Engineering undergraduate with strong interest in Artificial Intelligence and Data Science. I enjoy building intelligent systems that transform raw data into meaningful insights. My academic journey has strengthened my foundation in programming, machine learning, and analytical thinking.\n\nThrough projects like multi-task tweet classification and stock prediction systems, I have gained hands-on experience in NLP, deep learning, and data visualization. I continuously explore modern AI technologies and cloud platforms to develop scalable, real-world solutions.\n\nMy goal is to contribute to innovative AI-driven projects while continuously improving my technical expertise and problem-solving abilities.",
+          },
+          education: {
+            items: [
+              {
+                degree: "B.E. Computer Science and Engineering",
+                institution: "Government College of Engineering, Salem",
+                duration: "2022 – 2026",
+                grade: "CGPA: 7.5 / 10",
+              },
+              {
+                degree: "12th Standard",
+                institution:
+                  "Viswasanthi English Medium Higher Secondary School",
+                duration: "2020 – 2021",
+                grade: "92.4%",
+              },
+            ],
+          },
+          skills: {
+            categories: [
+              {
+                title: "Programming Languages",
+                items: ["Java", "C", "C++", "Python"],
+              },
+              {
+                title: "Libraries & Frameworks",
+                items: [
+                  "NumPy",
+                  "Pandas",
+                  "Matplotlib",
+                  "Seaborn",
+                  "NLP",
+                  "Deep Learning",
+                ],
+              },
+              { title: "Database", items: ["MySQL"] },
+              {
+                title: "Tools & Platforms",
+                items: [
+                  "Google Cloud Platform",
+                  "Git",
+                  "GitHub",
+                  "Google Colab",
+                  "VS Code",
+                ],
+              },
+            ],
+          },
+          projects: {
+            items: [
+              {
+                title:
+                  "GenSumm: Multi-task Tweet Classification & Summarization",
+                description:
+                  "Developed a joint deep learning framework for crisis tweet classification and summarization using DeBERTa and Pegasus models. Integrated sentiment analysis to enhance summary relevance and improve contextual accuracy.",
+                technologies: ["DeBERTa", "Pegasus", "NLP", "Deep Learning"],
+              },
+              {
+                title: "Stock Prediction Forecasting",
+                description:
+                  "Built a time-series based AI model for stock price prediction with Streamlit dashboard integration for visualization and insight generation.",
+                technologies: [
+                  "Pandas",
+                  "NumPy",
+                  "Matplotlib",
+                  "Seaborn",
+                  "Streamlit",
+                ],
+              },
+            ],
+          },
+          achievements: {
+            items: [
+              "Microsoft Azure AI Hackathon 2025 – Built AI-based real-time analysis solution",
+              "First Prize – Debate Competition (Sona College of Technology)",
+              "Workshop on Generative AI",
+              "Data Analysis with Myntra Dataset – WsCube Tech",
+            ],
+          },
+          contact: {
+            leftSide: {
+              email: "esuraj026@gmail.com",
+              location: "Tamil Nadu, India",
+              github: "suraj-6174",
+              linkedin: "https://www.linkedin.com/in/e-suraj-62b239262",
+            },
+            rightSide: {
+              formTitle: "Let's Connect",
+              fields: ["Full Name", "Email", "Message"],
+            },
+          },
+        },
+      };
+
+      // ===== GROQ API CONFIGURATION =====
+      const GROQ_API_KEY =
+        "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";
+      const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+      // ===== RENDER FUNCTIONS =====
+      function renderNav() {
+        const tabs = portfolio.navigation.tabs;
+        const navDiv = document.getElementById("navTabs");
+        navDiv.innerHTML = tabs
+          .map(
+            (tab) =>
+              `<div class="tab" data-section="${tab.toLowerCase()}">${tab}</div>`
+          )
+          .join("");
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            document
+              .querySelectorAll(".tab")
+              .forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+            const id = tab.getAttribute("data-section");
+            document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+          });
+        });
+        // activate first tab
+        document.querySelector(".tab").classList.add("active");
+      }
+
+      function renderHome() {
+        const titles = portfolio.sections.home.jobTitleAnimation.titles;
+        const speed = portfolio.sections.home.jobTitleAnimation.speed;
+        let index = 0;
+        const span = document.getElementById("rotating-title");
+        setInterval(() => {
+          span.innerText = titles[index % titles.length];
+          index++;
+        }, speed);
+      }
+
+      function renderAbout() {
+        document.getElementById("about-description").innerText =
+          portfolio.sections.about.description;
+      }
+
+      function renderEducation() {
+        const container = document.getElementById("education-timeline");
+        portfolio.sections.education.items.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "timeline-item";
+          div.innerHTML = `<div class="timeline-content"><h3>${item.degree}</h3><p>${item.institution} | ${item.duration}</p><p>${item.grade}</p></div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function renderSkills() {
+        const container = document.getElementById("skills-container");
+        portfolio.sections.skills.categories.forEach((cat) => {
+          const div = document.createElement("div");
+          div.className = "skill-category";
+          div.innerHTML = `<h3>${
+            cat.title
+          }</h3><div class="skill-items">${cat.items
+            .map((s) => `<span class="skill-tag">${s}</span>`)
+            .join("")}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function renderProjects() {
+        const container = document.getElementById("projects-container");
+        portfolio.sections.projects.items.forEach((proj) => {
+          const div = document.createElement("div");
+          div.className = "project-card";
+          div.innerHTML = `<div class="project-title">${proj.title}</div><p>${
+            proj.description
+          }</p><div class="project-tech">${proj.technologies
+            .map((t) => `<span class="tech-badge">${t}</span>`)
+            .join("")}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function renderAchievements() {
+        const container = document.getElementById("achievements-timeline");
+        portfolio.sections.achievements.items.forEach((ach, i) => {
+          const div = document.createElement("div");
+          div.className = "timeline-item";
+          div.innerHTML = `<div class="timeline-content">${ach}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function renderContact() {
+        const info = portfolio.sections.contact.leftSide;
+        document.getElementById("contact-info").innerHTML = `
+          <div class="info-item"><i class="fas fa-envelope"></i> ${info.email}</div>
+          <div class="info-item"><i class="fas fa-map-marker-alt"></i> ${info.location}</div>
+          <div class="info-item">
+            <i class="fab fa-github"></i>
+            <a href="https://github.com/${info.github}" target="_blank">${info.github}</a>
+          </div>
+          <div class="info-item">
+            <i class="fab fa-linkedin"></i>
+            <a href="${info.linkedin}" target="_blank">E Suraj</a>
+          </div>
+        `;
+        // Update footer links
+        document.getElementById(
+          "github-link"
+        ).href = `https://github.com/${info.github}`;
+        document.getElementById("linkedin-link").href = info.linkedin;
+      }
+
+      // ===== SCROLL ANIMATIONS =====
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("visible");
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll("section").forEach((s) => observer.observe(s));
+
+      // ===== TERMINAL MODE TOGGLE (with blue/green active colors) =====
+      document.getElementById("normalMode").addEventListener("click", () => {
+        document.body.classList.remove("hacker-mode");
+        document.getElementById("normalMode").classList.add("active");
+        document.getElementById("hackerMode").classList.remove("active");
+      });
+      document.getElementById("hackerMode").addEventListener("click", () => {
+        document.body.classList.add("hacker-mode");
+        document.getElementById("hackerMode").classList.add("active");
+        document.getElementById("normalMode").classList.remove("active");
+      });
+
+      // ===== AI ASSISTANT with GROQ (improved error handling) =====
+      const assistantBtn = document.getElementById("assistantBtn");
+      const chatPanel = document.getElementById("chatPanel");
+      const chatInput = document.getElementById("chatInput");
+      const chatSend = document.getElementById("chatSend");
+      const chatMessages = document.getElementById("chatMessages");
+
+      assistantBtn.addEventListener("click", () =>
+        chatPanel.classList.toggle("open")
+      );
+
+      const SYSTEM_PROMPT = `You are E Suraj's AI assistant. You help visitors learn about Suraj, his skills, projects, achievements, and background. Be friendly, concise, and informative. Use the following information (from his portfolio) to answer questions:
+
+- Suraj is an Engineering undergraduate (B.E. CSE) at Government College of Engineering, Salem (2022–2026, CGPA 7.5). 
+- He completed 12th with 92.4% in 2021.
+- His skills: Programming Languages (Java, C, C++, Python), Libraries (NumPy, Pandas, Matplotlib, Seaborn, NLP, Deep Learning), Database (MySQL), Tools (Google Cloud Platform, Git, GitHub, Google Colab, VS Code).
+- Projects: 
+  * GenSumm: Multi-task Tweet Classification & Summarization using DeBERTa, Pegasus, NLP, Deep Learning.
+  * Stock Prediction Forecasting using Pandas, NumPy, Matplotlib, Seaborn, Streamlit.
+- Achievements: Microsoft Azure AI Hackathon 2025, First Prize in Debate Competition, Workshop on Generative AI, Data Analysis with Myntra Dataset.
+- Contact: esuraj026@gmail.com, Tamil Nadu, India, GitHub: suraj-6174, LinkedIn: https://www.linkedin.com/in/e-suraj-62b239262.
+
+If you don't know, say you're not sure and suggest asking something else.`;
+
+      async function callGroq(userMessage) {
+        const response = await fetch(GROQ_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "llama3-8b-8192",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              { role: "user", content: userMessage },
+            ],
+            temperature: 0.7,
+            max_tokens: 500,
+          }),
+        });
+
+        if (!response.ok) {
+          let errorDetail = `HTTP error ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorDetail += ` - ${
+              errorData.error?.message || JSON.stringify(errorData)
+            }`;
+          } catch {
+            errorDetail += ` - ${response.statusText}`;
+          }
+          throw new Error(errorDetail);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+      }
+
+      function addBotMessage(text) {
+        const msg = document.createElement("div");
+        msg.innerText = "🤖 " + text;
+        chatMessages.appendChild(msg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function getMockResponse(userMessage) {
+        const lower = userMessage.toLowerCase();
+        if (lower.includes("skill")) {
+          return "I see you're asking about skills. Suraj knows Java, C, C++, Python, and libraries like NumPy, Pandas, and deep learning frameworks. Check the Skills section!";
+        } else if (lower.includes("project")) {
+          return "Suraj has worked on tweet classification (GenSumm) and stock prediction using time-series models. The Projects section has details.";
+        } else if (lower.includes("achievement")) {
+          return "He participated in the Microsoft Azure AI Hackathon 2025 and won a debate competition. See Achievements!";
+        } else if (lower.includes("hello") || lower.includes("hi")) {
+          return "Hello! I'm Suraj's AI assistant. Ask me anything about his work.";
+        } else {
+          return "That's interesting! You can ask about his skills, projects, or achievements.";
+        }
+      }
+
+      chatSend.addEventListener("click", async () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        chatSend.disabled = true;
+        chatMessages.innerHTML += `<div>👤 ${text}</div>`;
+        chatInput.value = "";
+
+        const thinkingId = "thinking-" + Date.now();
+        chatMessages.innerHTML += `<div id="${thinkingId}">🤖 ...</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+          const reply = await callGroq(text);
+          document.getElementById(thinkingId)?.remove();
+          addBotMessage(reply);
+        } catch (error) {
+          console.error("Groq API error:", error);
+          document.getElementById(thinkingId)?.remove();
+
+          if (
+            error.message.includes("Failed to fetch") ||
+            error.message.includes("NetworkError")
+          ) {
+            addBotMessage(
+              "⚠️ Network issue: The browser may be blocking the request due to CORS. " +
+                "Please open this page using a local server (e.g., Live Server in VS Code). " +
+                "For now, here's a demo response:\n\n" +
+                getMockResponse(text)
+            );
+          } else {
+            addBotMessage(
+              "⚠️ API error: " +
+                error.message +
+                "\n\n" +
+                "Using demo response instead:\n" +
+                getMockResponse(text)
+            );
+          }
+        } finally {
+          chatSend.disabled = false;
+        }
+      });
+
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !chatSend.disabled) {
+          chatSend.click();
+        }
+      });
+
+      // ===== PARTICLES (from theme) =====
+      const canvas = document.getElementById("particle-canvas");
+      const ctx = canvas.getContext("2d");
+      let width, height;
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      const particleCount = portfolio.theme.particles.count || 40;
+      const particleColor = portfolio.theme.particles.color || "#14b8a6";
+      const connectionDist =
+        portfolio.theme.particles.connectionDistance || 100;
+      const particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+        });
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+        });
+        ctx.strokeStyle = particleColor;
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < connectionDist) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.globalAlpha = 0.15 * (1 - dist / connectionDist);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.fillStyle = particleColor;
+        particles.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = particleColor;
+          ctx.globalAlpha = 0.4;
+          ctx.fill();
+        });
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+
+      // ===== INIT =====
+      renderNav();
+      renderHome();
+      renderAbout();
+      renderEducation();
+      renderSkills();
+      renderProjects();
+      renderAchievements();
+      renderContact();
+
+      // Form demo
+      document.getElementById("contactForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("Message sent (demo)");
+      });
+    </script>
+  </body>
+</html>
